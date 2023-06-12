@@ -15,7 +15,6 @@ public class ReusableMethods {
     public void setUpDriver(String url){
         WebDriverManager.chromedriver().setup();
         driver=new ChromeDriver();
-//        driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login");
         driver.get(url);
 
     }
@@ -27,11 +26,9 @@ public class ReusableMethods {
             throw new RuntimeException(e);
         }
         WebElement userId=driver.findElement(By.xpath("//input[@name='username']"));
-//        userId.sendKeys("Admin");
         userId.sendKeys(arg1);
 
         WebElement Password=driver.findElement(By.xpath("//input[@name='password']"));
-//        Password.sendKeys("admin123");
         Password.sendKeys(arg2);
         WebElement LoginBtn=driver.findElement(By.xpath("//button[@type='submit']"));
         LoginBtn.click();
