@@ -24,12 +24,12 @@ public class DriverScript {
                 String arg2 =readExcelData.getCellData(row,row);
                 reuse.logInToApp(ag1,arg2);
             }
-//            else if(cellValue.equals("clickAdmin")){
-//                reuse.clickAdmin();
-//            }
-//            else if(cellValue.equals("searchUser")){
-//                reuse.searchUser();
-//            }
+            else if(cellValue.equals("clickAdmin")){
+                reuse.clickAdmin();
+            }
+            else if(cellValue.equals("clickPim")){
+                reuse.clickPim();
+            }
             else if(cellValue.equals("tearDown")){
                 reuse.tearDown();
             }

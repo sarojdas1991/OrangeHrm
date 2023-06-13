@@ -10,7 +10,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 public class ReusableMethods {
-    WebDriver driver;
+    public WebDriver driver;
     @BeforeTest
     public void setUpDriver(String url){
         WebDriverManager.chromedriver().setup();
@@ -36,9 +36,26 @@ public class ReusableMethods {
     }
     @Test
     public void clickAdmin(){
-        WebElement AdminTab=driver.findElement(By.xpath("//span[@class='oxd-text oxd-text--span oxd-main-menu-item--name' and text()='Admin']"));
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        WebElement AdminTab=driver.findElement(By.xpath("//span[text()='Admin']"));
         AdminTab.click();
         System.out.println("click on Adin Tab");
+
+    }
+    @Test
+    public void clickPim(){
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        WebElement AdminTab=driver.findElement(By.xpath("//span[text()='PIM']"));
+        AdminTab.click();
+        System.out.println("click on Pim Tab");
 
     }
     @Test
