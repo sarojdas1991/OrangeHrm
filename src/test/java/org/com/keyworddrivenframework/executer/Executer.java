@@ -5,10 +5,16 @@ import org.testng.annotations.Test;
 
 public class Executer {
     public KeywordEngine engine;
-    @Test
+    @Test(priority = 1)
     public void loginTest(){
         engine=new KeywordEngine();
-        engine.startExecution("Sheet1");
+        engine.startExecution("addUser");
+
+    }
+//    @Test(priority = 2)
+    public void addUser(){
+        engine=new KeywordEngine();
+        engine.startExecution("Sheet2");
 
     }
 }

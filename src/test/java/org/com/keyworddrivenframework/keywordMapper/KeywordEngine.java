@@ -35,6 +35,7 @@ public class KeywordEngine  {
             String LocatorName = sheet.getRow(row + 1).getCell(cell + 1).toString().trim();
             String LocatorValue = sheet.getRow(row + 1).getCell(cell + 2).toString().trim();
             String Value = sheet.getRow(row + 1).getCell(cell + 3).toString().trim();
+            String Data = sheet.getRow(row + 1).getCell(cell + 4).toString().trim();
 
             switch (actionName) {
                 case "openBrowser":
@@ -53,13 +54,15 @@ public class KeywordEngine  {
                     break;
                 case "selectDropdown":
                     if (Value.equals("index")){
-                        base.selectDropDownByIndex(LocatorValue, Integer.parseInt(base.initializeProperty("")));
+                        base.selectDropDownByIndex(LocatorValue, Integer.parseInt(Data));
                     }else if(Value.equals("value")){
-                        base.selectDropDownByValue(LocatorValue,base.initializeProperty(""));
+                        base.selectDropDownByValue(LocatorValue,Data);
                     } else if (Value.equals("text")) {
-                        base.selectDropDownByVisibleText(LocatorValue,base.initializeProperty(""));
+                        base.selectDropDownByVisibleText(LocatorValue,Data);
                     }
                     break;
+                case "alert":
+                    base.alert(Value);
 
                 case "quit":
                     base.quit();

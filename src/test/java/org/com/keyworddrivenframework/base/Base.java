@@ -7,6 +7,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -26,6 +27,7 @@ public class Base {
 //        {
             WebDriverManager.chromedriver().setup();
             driver=new ChromeDriver();
+            driver.manage().window().maximize();
 //        }
 //        else if(browser.equals("firefox"))
 //        {
@@ -99,7 +101,7 @@ public class Base {
     }
     public void click(String locatorType,String locator){
         try {
-            Thread.sleep(2000);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -138,22 +140,63 @@ public class Base {
         }
     }
     public void selectDropDownByIndex(String locator,int index){
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         element=driver.findElement(By.xpath(locator));
         Select select=new Select(element);
             select.selectByIndex(index);
 
     }
     public void selectDropDownByValue(String locator,String value){
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         element=driver.findElement(By.xpath(locator));
         Select select=new Select(element);
         select.selectByValue(value);
 
     }
     public void selectDropDownByVisibleText(String locator,String Text){
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         element=driver.findElement(By.xpath(locator));
         Select select=new Select(element);
         select.selectByVisibleText(Text);
 
     }
+    public void validateText(String locator,String Text){
+        element= driver.findElement(By.xpath(locator));
+        String textValue=element.getText();
+        Assert.assertEquals(textValue,Text);
     }
+    public void isDisplayed(String locator){
+        element= driver.findElement(By.xpath(locator));
+        boolean flag=element.isDisplayed();
+        Assert.assertEquals(flag,true);
+    }
+    public void isEnabled(String locator){
+        element= driver.findElement(By.xpath(locator));
+        boolean flag=element.isEnabled();
+        Assert.assertEquals(flag,true);
+    }
+
+    public void alert(String status){
+        Alert alert=driver.switchTo().alert();
+        if(status.equals("accept")){
+            alert.accept();
+        }else if(status.equalsIgnoreCase("reject")){
+            alert.dismiss();
+        }else if(status.equalsIgnoreCase("getText")){
+            alert.getText();
+        }
+    }
+}
 
