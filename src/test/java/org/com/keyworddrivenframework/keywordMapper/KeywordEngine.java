@@ -42,8 +42,6 @@ public class KeywordEngine  {
                     base.initializeDriver();
                     break;
                 case "lunchUrl":
-
-                    System.out.println(Value);
                     base.lunchUrl(Value);
                     break;
                 case "sendKey":
