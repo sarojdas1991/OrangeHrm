@@ -1,5 +1,6 @@
 package org.com.keyworddrivenframework.keywordMapper;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -17,6 +18,7 @@ public class KeywordEngine  {
     public Workbook book;
     public Sheet sheet;
      Base base=new Base();
+    private static final Logger logger = Logger.getLogger(KeywordEngine.class);
     public void startExecution(String sheetName)
 
     {
@@ -39,9 +41,11 @@ public class KeywordEngine  {
 
             switch (actionName) {
                 case "openBrowser":
+                    logger.info("initializing the browser");
                     base.initializeDriver();
                     break;
-                case "lunchUrl":
+                case "lunchUrl":logger.info("Application getting start");
+
                     base.lunchUrl(Value);
                     break;
                 case "sendKey":
@@ -61,7 +65,15 @@ public class KeywordEngine  {
                     break;
                 case "alert":
                     base.alert(Value);
-
+                case "verifyListDataAndDelete"   :
+                    base.verifyListDataAndDelete(LocatorValue,Value);
+                    break;
+                case "verifyListData"    :
+                    base.verifyListData(LocatorValue,Value);
+                    break;
+                case "clickCheckBox"    :
+                    base.clickCheckBox(LocatorName, LocatorValue);
+                    break;
                 case "quit":
                     base.quit();
                     break;

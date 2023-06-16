@@ -1,6 +1,7 @@
 package org.com.keyworddrivenframework.base;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.apache.log4j.PropertyConfigurator;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -12,6 +13,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class Base {
@@ -196,6 +199,92 @@ public class Base {
         }else if(status.equalsIgnoreCase("getText")){
             alert.getText();
         }
+    }
+    public  List<String> getListData(String locator) {
+        List<String> listName = new ArrayList<>();
+
+            List<WebElement> links = driver.findElements(By.xpath(locator));
+        System.out.println(links.size());
+
+            for (int index = 0; index < links.size(); index++) {
+                WebElement ele = links.get(index);
+                String title = ele.getText();
+                System.out.println(title);
+                listName.add(title);
+            }
+            System.out.println("Size of List listName = "+listName.size());
+
+
+        return listName;
+
+    }
+    public void verifyListDataAndDelete(String locator,String input){
+        List<String> DataList =getListData(locator);
+        for (int i=0;i< DataList.size();i++){
+            String value=DataList.get(i);
+            System.out.println("Validating Data of List");
+            if(value.equalsIgnoreCase(input)){
+                System.out.println("Data already exit in list");
+                String locator1="//div[text()='"+value+"']//preceding::input[1]";
+                element=driver.findElement(By.xpath(locator1));
+                element.click();
+                element=driver.findElement(By.xpath("//button[text()=' Delete Selected ']"));
+                element.click();
+            }
+        }
+
+
+    }
+    public void verifyListData(String locator,String input){
+        List<String> DataList =getListData(locator);
+        for (int i=0;i< DataList.size();i++){
+            String value=DataList.get(i);
+            if(value.equalsIgnoreCase(input)){
+                System.out.println("Data already exit in list");
+               Assert.assertEquals(value,input);
+            }
+        }
+
+
+    }
+    public void clickCheckBox(String locatorType,String locator){
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        if(locatorType.equals("xpath"))
+        {
+            element=driver.findElement(By.xpath(locator));
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("arguments[0].click();", element);
+        }else if(locatorType.equals("id"))
+        {
+            element=driver.findElement(By.id(locator)) ;
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("arguments[0].click();", element);
+        }
+        else if(locatorType.equals("name"))
+        {
+            element=driver.findElement(By.name(locator)) ;
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("arguments[0].click();", element);
+        }else if(locatorType.equals("className"))
+        {
+            element=driver.findElement(By.className(locator)) ;
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("arguments[0].click();", element);
+        }else if(locatorType.equals("css"))
+        {
+            element=driver.findElement(By.cssSelector(locator)) ;
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("arguments[0].click();", element);
+        }
+
+
+    }
+    public void configLog(){
+        PropertyConfigurator.configure("src/main/resources/log4j.properties");
     }
 }
 
