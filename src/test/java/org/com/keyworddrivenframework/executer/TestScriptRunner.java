@@ -1,21 +1,22 @@
 package org.com.keyworddrivenframework.executer;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.com.keyworddrivenframework.base.Base;
+import org.com.keyworddrivenframework.base.ExcelUtils;
 import org.com.keyworddrivenframework.keywordMapper.KeywordEngine;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.openqa.selenium.WebDriver;
+import org.testng.ITestResult;
+import org.testng.annotations.*;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import static org.com.keyworddrivenframework.base.Base.PathSep;
 import static org.com.keyworddrivenframework.base.Base.UserDir;
 
 public class TestScriptRunner {
+    Base base=new Base();
+    ExcelUtils excelUtils=new ExcelUtils();
     KeywordEngine engine;
     String filePath = UserDir + PathSep + "src" + PathSep + "test" + PathSep + "java" + PathSep + "org" + PathSep + "com" + PathSep + "keyworddrivenframework"+ PathSep+"testdata" + PathSep + "InputKeywords.xlsx";
 
@@ -32,57 +33,30 @@ public class TestScriptRunner {
         // Test method 2 logic
         System.out.println("Executing testMethod2 with username: " + username);
     }
+    @AfterMethod
+    public void takeScreenShotOnFailure(ITestResult testResult) throws IOException {
+        if (testResult.getStatus() == ITestResult.FAILURE) {
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+            System.out.println(timeStamp );
+            String Name= "Orange" ;
+//                    + base.getTime(testResult.getStartMillis());
+            base.captureScreenshot(timeStamp);
+        }
+        base.quit();
+    }
 
     @DataProvider(name = "testDataMethod1")
     public Object[][] testDataMethod1() throws IOException {
-        return getTestData(filePath, "Executor", "Y");
+//        return getTestData(filePath, "Executor", "Y");
+        return excelUtils.getTestData(filePath, "Executor", "Y");
     }
 
     @DataProvider(name = "testDataMethod2")
     public Object[][] testDataMethod2() throws IOException {
-        return getTestData(filePath, "Executor", "N");
+//        return getTestData(filePath, "Executor", "N");
+        return excelUtils.getTestData(filePath, "Executor", "N");
     }
 
-    private Object[][] getTestData(String excelFilePath, String sheetName, String flag) throws IOException {
-        FileInputStream inputStream = new FileInputStream(excelFilePath);
-        Workbook workbook = new XSSFWorkbook(inputStream);
-        Sheet sheet = workbook.getSheet(sheetName);
-
-        int rowCount = sheet.getLastRowNum();
-        int dataCount = 0;
-
-        // Count the number of rows with the specified flag
-        for (int i = 1; i <= rowCount; i++) {
-            Row row = sheet.getRow(i);
-            Cell flagCell = row.getCell(1);
-            String cellValue = flagCell.getStringCellValue();
-            if (cellValue.equalsIgnoreCase(flag)) {
-                dataCount++;
-            }
-        }
-
-        Object[][] data = new Object[dataCount][1];
-        int dataIndex = 0;
-
-        // Populate the data array with usernames having the specified flag
-        for (int i = 1; i <= rowCount; i++) {
-            Row row = sheet.getRow(i);
-            Cell flagCell = row.getCell(1);
-            String cellValue = flagCell.getStringCellValue();
-
-            if (cellValue.equalsIgnoreCase(flag)) {
-                Cell usernameCell = row.getCell(0);
-                String username = usernameCell.getStringCellValue();
-                data[dataIndex][0] = username;
-                dataIndex++;
-            }
-        }
-
-        workbook.close();
-        inputStream.close();
-
-        return data;
-    }
 
     public static void main(String[] args) {
         org.testng.TestNG testng = new org.testng.TestNG();
@@ -90,3 +64,4 @@ public class TestScriptRunner {
         testng.run();
     }
 }
+

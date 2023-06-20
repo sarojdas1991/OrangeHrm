@@ -1,7 +1,9 @@
 package org.com.keyworddrivenframework.base;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.PropertyConfigurator;
+import org.com.keyworddrivenframework.executer.ExtentReportOrangeHrm;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -9,56 +11,48 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 public class Base {
-    public WebDriver driver;
+WebDriver driver;
+//= SingletonChromeDriver.getInstance().driver;
     public Properties prop;
     public WebElement element;
     public static String UserDir = System.getProperty("user.dir");
     public static String PathSep = System.getProperty("file.separator");
 
-    public void initializeDriver() {
-//        if (browser.equals("chrome"))
-//        {
-            WebDriverManager.chromedriver().setup();
-            driver=new ChromeDriver();
-            driver.manage().window().maximize();
-//        }
-//        else if(browser.equals("firefox"))
-//        {
-//            WebDriverManager.firefoxdriver().setup();
-//            driver=new FirefoxDriver();
-//        }
-
+    public WebDriver initializeDriver() {
+        WebDriverManager.chromedriver().setup();
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        return driver;
     }
-    public String initializeProperty(String data){
-        String filePath = UserDir + PathSep + "src" + PathSep + "test" + PathSep + "java" + PathSep + "org" + PathSep + "com" + PathSep + "keyworddrivenframework"+ PathSep+"properties" + PathSep + "Data.properties";
+
+    public String initializeProperty(String data) {
+        String filePath = UserDir + PathSep + "src" + PathSep + "test" + PathSep + "java" + PathSep + "org" + PathSep + "com" + PathSep + "keyworddrivenframework" + PathSep + "properties" + PathSep + "Data.properties";
 
         prop = new Properties();
         try {
             FileReader reader = new FileReader(filePath);
-
             prop.load(reader);
         } catch (FileNotFoundException e) {
-            System.out.println("file not found");
+            System.out.println("File not found");
         } catch (IOException e) {
             System.out.println("IOException");
-
         }
         return prop.getProperty(data);
-
     }
-    public void lunchUrl(String url){
-           driver.get(url);
-       }
-    public void quit(){
+
+    public void lunchUrl(String url) {
+        driver.get(url);
+    }
+
+    public void quit() {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
@@ -66,7 +60,17 @@ public class Base {
         }
         driver.quit();
     }
+    public void close() {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        driver.close();
+    }
+
     public void enterText(String locatorType,String locator,String key){
+        System.out.println(driver);
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
@@ -282,6 +286,42 @@ public class Base {
         }
 
 
+    }
+
+    /*Method Description: This method is used to take the screenshot and save in
+                         specified path in .png file.
+       Returns: null
+     */
+    public void captureScreenshot(String screenshotName) {
+//        driver=initializeDriver();
+        String UserDir = System.getProperty("user.dir");
+        String PathSep = System.getProperty("file.separator");
+        String filePath = UserDir + PathSep + "src" + PathSep + "test" + PathSep + "java" + PathSep + "org" + PathSep + "com" + PathSep + "keyworddrivenframework" + PathSep + "screenshot"+PathSep;
+
+        System.out.println(driver);
+        try {
+// To create reference of TakesScreenshot
+//            TakesScreenshot screenshot = (TakesScreenshot) driver;
+// Call method to capture screenshot
+//            File src = screenshot.getScreenshotAs(OutputType.FILE);
+// Copy files to specific location
+// result.getName() will return name of test case so that screenshot name will be same as test case name
+            System.out.println(driver);
+            File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+            FileUtils.copyFile(scrFile, new File(filePath + screenshotName + ".png"));
+            System.out.println("Successfully captured a screenshot");
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found" + e.getMessage());
+
+        } catch (Exception e) {
+            System.out.println("Exception while taking screenshot " + e.getMessage());
+        }
+
+    }
+    public Date getTime(long millis) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(millis);
+        return calendar.getTime();
     }
     public void configLog(){
         PropertyConfigurator.configure("src/main/resources/log4j.properties");

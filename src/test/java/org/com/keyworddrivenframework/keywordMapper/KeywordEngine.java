@@ -42,7 +42,6 @@ public class KeywordEngine  {
             switch (actionName) {
                 case "openBrowser":
                     logger.info("initializing the browser");
-                    base.initializeDriver();
                     break;
                 case "lunchUrl":logger.info("Application getting start");
 
@@ -77,6 +76,8 @@ public class KeywordEngine  {
                 case "quit":
                     base.quit();
                     break;
+                case "screenshot" :
+                    base.captureScreenshot(Value);
                 default:
                     break;
 
