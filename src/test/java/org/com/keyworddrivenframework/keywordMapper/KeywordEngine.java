@@ -6,10 +6,13 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.com.keyworddrivenframework.base.Base;
+import org.testng.Assert;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import static org.com.keyworddrivenframework.base.Base.PathSep;
 import static org.com.keyworddrivenframework.base.Base.UserDir;
@@ -19,6 +22,7 @@ public class KeywordEngine  {
     public Sheet sheet;
      Base base=new Base();
     private static final Logger logger = Logger.getLogger(KeywordEngine.class);
+    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
     public void startExecution(String sheetName)
 
     {
@@ -41,17 +45,44 @@ public class KeywordEngine  {
 
             switch (actionName) {
                 case "openBrowser":
+//                      base.initializeDriver();
                     logger.info("initializing the browser");
+                    if(Value.equalsIgnoreCase("NA")){
+                        base.setupDriver(base.initializeProperty("browser"));
+                    }else {
+                        base.setupDriver(Value);
+                    }
                     break;
-                case "lunchUrl":logger.info("Application getting start");
-
+                case "lunchUrl":
+                    logger.info("Application getting start");
+                    if(Value.equalsIgnoreCase("NA")){
+                        base.lunchUrl(base.initializeProperty("url"));
+                    }else {
                     base.lunchUrl(Value);
+                    }
                     break;
                 case "sendKey":
-                    base.enterText(LocatorName, LocatorValue, Value);
+                    base.waitForElementIntractable(LocatorName,LocatorValue);
+                    boolean flag=base.isDisplayed(LocatorName,LocatorValue);
+                    if (flag){
+                        base.enterText(LocatorName, LocatorValue, Value);
+                    }else {
+                        base.captureScreenshot(timeStamp);
+                        base.quit();
+                        Assert.assertTrue(flag);
+                    }
+
                     break;
                 case "click":
-                    base.click(LocatorName, LocatorValue);
+                    base.waitForElementIntractable(LocatorName,LocatorValue);
+                    boolean flag1=base.isDisplayed(LocatorName,LocatorValue);
+                    if (flag1==true){
+                        base.click(LocatorName, LocatorValue);
+                    }else {
+                        base.captureScreenshot(timeStamp);
+                        base.quit();
+                        Assert.assertTrue(flag1);
+                    }
                     break;
                 case "selectDropdown":
                     if (Value.equals("index")){
@@ -71,13 +102,23 @@ public class KeywordEngine  {
                     base.verifyListData(LocatorValue,Value);
                     break;
                 case "clickCheckBox"    :
-                    base.clickCheckBox(LocatorName, LocatorValue);
+                    boolean flag2=base.isSelected(LocatorName,LocatorValue);
+                    if(flag2==false) {
+                        base.clickCheckBox(LocatorName, LocatorValue);
+                    }
                     break;
                 case "quit":
                     base.quit();
                     break;
                 case "screenshot" :
                     base.captureScreenshot(Value);
+                    break;
+                case "wait"    :
+                    base.waitForElementIntractable(LocatorName,LocatorValue);
+                    break;
+                case"validateText"    :
+                    base.validateText(LocatorName,LocatorValue,Value);
+                    break;
                 default:
                     break;
 

@@ -3,7 +3,6 @@ package org.com.keyworddrivenframework.executer;
 import org.com.keyworddrivenframework.base.Base;
 import org.com.keyworddrivenframework.base.ExcelUtils;
 import org.com.keyworddrivenframework.keywordMapper.KeywordEngine;
-import org.openqa.selenium.WebDriver;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
 
@@ -27,36 +26,20 @@ public class TestScriptRunner {
         engine.startExecution(username);
 
     }
-
-    //    @Test(dataProvider = "testDataMethod2")
-    public void testMethod2(String username) {
-        // Test method 2 logic
-        System.out.println("Executing testMethod2 with username: " + username);
-    }
-    @AfterMethod
+//    @AfterMethod
     public void takeScreenShotOnFailure(ITestResult testResult) throws IOException {
         if (testResult.getStatus() == ITestResult.FAILURE) {
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
             System.out.println(timeStamp );
-            String Name= "Orange" ;
-//                    + base.getTime(testResult.getStartMillis());
-            base.captureScreenshot(timeStamp);
+            String Name= "Orange"+timeStamp;
+            base.captureScreenshot(Name);
         }
-        base.quit();
     }
 
     @DataProvider(name = "testDataMethod1")
     public Object[][] testDataMethod1() throws IOException {
-//        return getTestData(filePath, "Executor", "Y");
         return excelUtils.getTestData(filePath, "Executor", "Y");
     }
-
-    @DataProvider(name = "testDataMethod2")
-    public Object[][] testDataMethod2() throws IOException {
-//        return getTestData(filePath, "Executor", "N");
-        return excelUtils.getTestData(filePath, "Executor", "N");
-    }
-
 
     public static void main(String[] args) {
         org.testng.TestNG testng = new org.testng.TestNG();
