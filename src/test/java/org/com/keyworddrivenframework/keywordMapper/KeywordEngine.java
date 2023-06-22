@@ -42,13 +42,14 @@ public class KeywordEngine  {
             String LocatorValue = sheet.getRow(row + 1).getCell(cell + 2).toString().trim();
             String Value = sheet.getRow(row + 1).getCell(cell + 3).toString().trim();
             String Data = sheet.getRow(row + 1).getCell(cell + 4).toString().trim();
+            String Property=sheet.getRow(row + 1).getCell(cell + 5).toString().trim();
+            String LocVal=base.initializePropertyFromFile(Property,LocatorValue);
 
             switch (actionName) {
                 case "openBrowser":
-//                      base.initializeDriver();
                     logger.info("initializing the browser");
                     if(Value.equalsIgnoreCase("NA")){
-                        base.setupDriver(base.initializeProperty("browser"));
+                        base.setupDriver(base.initializePropertyFromFile(Property,"browser"));
                     }else {
                         base.setupDriver(Value);
                     }
@@ -56,16 +57,17 @@ public class KeywordEngine  {
                 case "lunchUrl":
                     logger.info("Application getting start");
                     if(Value.equalsIgnoreCase("NA")){
-                        base.lunchUrl(base.initializeProperty("url"));
+                        base.lunchUrl(base.initializePropertyFromFile(Property,"url"));
                     }else {
                     base.lunchUrl(Value);
                     }
                     break;
                 case "sendKey":
-                    base.waitForElementIntractable(LocatorName,LocatorValue);
-                    boolean flag=base.isDisplayed(LocatorName,LocatorValue);
+
+                    base.waitForElementIntractable(LocatorName,LocVal);
+                    boolean flag=base.isDisplayed(LocatorName,LocVal);
                     if (flag){
-                        base.enterText(LocatorName, LocatorValue, Value);
+                        base.enterText(LocatorName,LocVal, Value);
                     }else {
                         base.captureScreenshot(timeStamp);
                         base.quit();
@@ -74,10 +76,10 @@ public class KeywordEngine  {
 
                     break;
                 case "click":
-                    base.waitForElementIntractable(LocatorName,LocatorValue);
-                    boolean flag1=base.isDisplayed(LocatorName,LocatorValue);
+                    base.waitForElementIntractable(LocatorName,LocVal);
+                    boolean flag1=base.isDisplayed(LocatorName,LocVal);
                     if (flag1==true){
-                        base.click(LocatorName, LocatorValue);
+                        base.click(LocatorName,LocVal);
                     }else {
                         base.captureScreenshot(timeStamp);
                         base.quit();
@@ -102,9 +104,10 @@ public class KeywordEngine  {
                     base.verifyListData(LocatorValue,Value);
                     break;
                 case "clickCheckBox"    :
-                    boolean flag2=base.isSelected(LocatorName,LocatorValue);
+                    base.waitForElementIntractable(LocatorName,LocVal);
+                    boolean flag2=base.isSelected(LocatorName,LocVal);
                     if(flag2==false) {
-                        base.clickCheckBox(LocatorName, LocatorValue);
+                        base.clickCheckBox(LocatorName, LocVal);
                     }
                     break;
                 case "quit":
@@ -118,6 +121,9 @@ public class KeywordEngine  {
                     break;
                 case"validateText"    :
                     base.validateText(LocatorName,LocatorValue,Value);
+                    break;
+                case "refreshBrowser" :
+                    base.refreshBrowser();
                     break;
                 default:
                     break;

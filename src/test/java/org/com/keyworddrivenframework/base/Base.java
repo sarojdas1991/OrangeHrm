@@ -3,9 +3,11 @@ package org.com.keyworddrivenframework.base;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.PropertyConfigurator;
-import org.com.keyworddrivenframework.executer.ExtentReportOrangeHrm;
 import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -27,10 +29,28 @@ WebDriver driver;
     public static String PathSep = System.getProperty("file.separator");
 
     public WebDriver initializeDriver() {
-        WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
+//        WebDriverManager.chromedriver().setup();
+//        driver = new ChromeDriver();
+
+        WebDriverManager.edgedriver().setup();
+        WebDriver edgeDriver = new EdgeDriver();
         driver.manage().window().maximize();
         return driver;
+    }
+    public void setupDriver(String browserName){
+        try {
+            if (browserName.equalsIgnoreCase("chrome")) {
+                System.setProperty("webdriver.chrome.driver", "D:" + PathSep + "Drivers" + PathSep+ "Chrome" + PathSep + "chromedriver.exe");
+                driver = new ChromeDriver();
+                driver.manage().window().maximize();
+            } else if (browserName.equalsIgnoreCase("FF")) {
+                System.setProperty("webdriver.gecko.driver", "D:" + PathSep + "Drivers" + PathSep+ "FF"+ PathSep + "geckodriver.exe");
+                driver = new FirefoxDriver();
+                driver.manage().window().maximize();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String initializeProperty(String data) {
@@ -39,6 +59,19 @@ WebDriver driver;
         prop = new Properties();
         try {
             FileReader reader = new FileReader(filePath);
+            prop.load(reader);
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+        } catch (IOException e) {
+            System.out.println("IOException");
+        }
+        return prop.getProperty(data);
+    }
+    public String initializePropertyFromFile(String Name,String data) {
+        String filePath = UserDir + PathSep + "src" + PathSep + "test" + PathSep + "java" + PathSep + "org" + PathSep + "com" + PathSep + "keyworddrivenframework" + PathSep + "properties" + PathSep ;
+        prop = new Properties();
+        try {
+            FileReader reader = new FileReader(filePath+Name+".Properties");
             prop.load(reader);
         } catch (FileNotFoundException e) {
             System.out.println("File not found");
@@ -70,74 +103,72 @@ WebDriver driver;
     }
 
     public void enterText(String locatorType,String locator,String key){
-        System.out.println(driver);
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        if(locatorType.equals("xpath"))
-        {
-        element=driver.findElement(By.xpath(locator));
-        element.clear();
-        element.sendKeys(key);
-        }else if(locatorType.equals("id"))
-        {
-         element=driver.findElement(By.id(locator)) ;
-         element.clear();
-         element.sendKeys(key);
-        }
-        else if(locatorType.equals("name"))
-        {
-            element=driver.findElement(By.name(locator)) ;
-            element.clear();
-            element.sendKeys(key);
-        }else if(locatorType.equals("className"))
-        {
-            element=driver.findElement(By.className(locator)) ;
-            element.clear();
-            element.sendKeys(key);
-        }else if(locatorType.equals("css"))
-        {
-            element=driver.findElement(By.cssSelector(locator)) ;
-            element.clear();
-            element.sendKeys(key);
+        waitForElementIntractable(locatorType,locator);
+        switch (locatorType) {
+            case "xpath" -> {
+                element = driver.findElement(By.xpath(locator));
+                element.clear();
+                element.sendKeys(key);
+            }
+            case "id" -> {
+                element = driver.findElement(By.id(locator));
+                element.clear();
+                element.sendKeys(key);
+            }
+            case "name" -> {
+                element = driver.findElement(By.name(locator));
+                element.clear();
+                element.sendKeys(key);
+            }
+            case "className" -> {
+                element = driver.findElement(By.className(locator));
+                element.clear();
+                element.sendKeys(key);
+            }
+            case "css" -> {
+                element = driver.findElement(By.cssSelector(locator));
+                element.clear();
+                element.sendKeys(key);
+            }
         }
 
     }
     public void click(String locatorType,String locator){
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        if(locatorType.equals("xpath"))
-        {
-            element=driver.findElement(By.xpath(locator));
-            element.click();
-        }else if(locatorType.equals("id"))
-        {
-            element=driver.findElement(By.id(locator)) ;
-            element.click();
-        }
-        else if(locatorType.equals("name"))
-        {
-            element=driver.findElement(By.name(locator)) ;
-            element.click();
-        }else if(locatorType.equals("className"))
-        {
-            element=driver.findElement(By.className(locator)) ;
-            element.click();
-        }else if(locatorType.equals("css"))
-        {
-            element=driver.findElement(By.cssSelector(locator)) ;
-            element.click();
+        waitForElementIntractable(locatorType,locator);
+        switch (locatorType) {
+            case "xpath" -> {
+                element = driver.findElement(By.xpath(locator));
+                element.click();
+            }
+            case "id" -> {
+                element = driver.findElement(By.id(locator));
+                element.click();
+            }
+            case "name" -> {
+                element = driver.findElement(By.name(locator));
+                element.click();
+            }
+            case "className" -> {
+                element = driver.findElement(By.className(locator));
+                element.click();
+            }
+            case "css" -> {
+                element = driver.findElement(By.cssSelector(locator));
+                element.click();
+            }
         }
 
     }
-    public  void waitForElementIntractable(String locator) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    public  void waitForElementIntractable(String locatorType,String locator) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         try {
+            switch (locatorType) {
+                case "xpath" -> wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(locator)));
+                case "id" -> wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(locator)));
+                case "name" -> wait.until(ExpectedConditions.visibilityOfElementLocated(By.name(locator)));
+                case "className" -> wait.until(ExpectedConditions.visibilityOfElementLocated(By.className(locator)));
+                case "css" -> wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(locator)));
+            }
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(locator)));
         } catch (ElementNotInteractableException e) {
             System.out.println("Element is not intractable");
@@ -168,33 +199,123 @@ WebDriver driver;
 
     }
     public void selectDropDownByVisibleText(String locator,String Text){
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         element=driver.findElement(By.xpath(locator));
         Select select=new Select(element);
         select.selectByVisibleText(Text);
 
     }
-    public void validateText(String locator,String Text){
-        element= driver.findElement(By.xpath(locator));
-        String textValue=element.getText();
-        Assert.assertEquals(textValue,Text);
+    public void validateText(String locatorType,String locator,String Text){
+        switch (locatorType) {
+            case "xpath" -> {
+                element = driver.findElement(By.xpath(locator));
+                String textValue = element.getText();
+                Assert.assertEquals(textValue, Text);
+            }
+            case "id" -> {
+                element = driver.findElement(By.id(locator));
+                String textValue = element.getText();
+                Assert.assertEquals(textValue, Text);
+
+            }
+            case "name" -> {
+                element = driver.findElement(By.name(locator));
+                String textValue = element.getText();
+                Assert.assertEquals(textValue, Text);
+
+            }
+            case "className" -> {
+                element = driver.findElement(By.className(locator));
+                String textValue = element.getText();
+                Assert.assertEquals(textValue, Text);
+            }
+            case "css" -> {
+                element = driver.findElement(By.cssSelector(locator));
+                String textValue = element.getText();
+                Assert.assertEquals(textValue, Text);
+            }
+        }
+
     }
-    public void isDisplayed(String locator){
-        element= driver.findElement(By.xpath(locator));
-        boolean flag=element.isDisplayed();
-        Assert.assertEquals(flag,true);
+    public boolean isDisplayed(String locatorType,String locator) {
+        boolean flag=false;
+        try {
+            switch (locatorType) {
+                case "xpath" -> {
+                    element = driver.findElement(By.xpath(locator));
+                    flag = element.isDisplayed();
+                    return flag;
+                }
+                case "id" -> {
+                    element = driver.findElement(By.id(locator));
+                    flag = element.isDisplayed();
+                    return flag;
+                }
+                case "name" -> {
+                    element = driver.findElement(By.name(locator));
+                    flag = element.isDisplayed();
+                    return flag;
+                }
+                case "className" -> {
+                    element = driver.findElement(By.className(locator));
+                    flag = element.isDisplayed();
+                    return flag;
+                }
+                case "css" -> {
+                    element = driver.findElement(By.cssSelector(locator));
+                    flag = element.isDisplayed();
+                    return flag;
+                }
+            }
+        } catch (NoSuchElementException e) {
+            System.out.println("Element is not present, hence not displayed as well");
+        }
+
+        return false;
     }
     public void isEnabled(String locator){
         element= driver.findElement(By.xpath(locator));
         boolean flag=element.isEnabled();
-        Assert.assertEquals(flag,true);
+        Assert.assertTrue(flag);
+    }
+    public boolean isSelected(String locatorType,String locator){
+        boolean flag=false;
+        try {
+            switch (locatorType) {
+                case "xpath" -> {
+                    element = driver.findElement(By.xpath(locator));
+                    flag = element.isSelected();
+                    return flag;
+                }
+                case "id" -> {
+                    element = driver.findElement(By.id(locator));
+                    flag = element.isSelected();
+                    return flag;
+                }
+                case "name" -> {
+                    element = driver.findElement(By.name(locator));
+                    flag = element.isSelected();
+                    return flag;
+                }
+                case "className" -> {
+                    element = driver.findElement(By.className(locator));
+                    flag = element.isSelected();
+                    return flag;
+                }
+                case "css" -> {
+                    element = driver.findElement(By.cssSelector(locator));
+                    flag = element.isSelected();
+                    return flag;
+                }
+            }
+        }
+        catch (NoSuchElementException e){
+            System.out.println("Element is not present, hence not displayed as well");
+        }
+        return false;
     }
 
     public void alert(String status){
+        try{
         Alert alert=driver.switchTo().alert();
         if(status.equals("accept")){
             alert.accept();
@@ -202,7 +323,11 @@ WebDriver driver;
             alert.dismiss();
         }else if(status.equalsIgnoreCase("getText")){
             alert.getText();
+        }}
+        catch (NoAlertPresentException e){
+            System.out.println("No Alert Present");
         }
+
     }
     public  List<String> getListData(String locator) {
         List<String> listName = new ArrayList<>();
@@ -210,12 +335,11 @@ WebDriver driver;
             List<WebElement> links = driver.findElements(By.xpath(locator));
         System.out.println(links.size());
 
-            for (int index = 0; index < links.size(); index++) {
-                WebElement ele = links.get(index);
-                String title = ele.getText();
-                System.out.println(title);
-                listName.add(title);
-            }
+        for (WebElement ele : links) {
+            String title = ele.getText();
+            System.out.println(title);
+            listName.add(title);
+        }
             System.out.println("Size of List listName = "+listName.size());
 
 
@@ -224,15 +348,14 @@ WebDriver driver;
     }
     public void verifyListDataAndDelete(String locator,String input){
         List<String> DataList =getListData(locator);
-        for (int i=0;i< DataList.size();i++){
-            String value=DataList.get(i);
+        for (String value : DataList) {
             System.out.println("Validating Data of List");
-            if(value.equalsIgnoreCase(input)){
+            if (value.equalsIgnoreCase(input)) {
                 System.out.println("Data already exit in list");
-                String locator1="//div[text()='"+value+"']//preceding::input[1]";
-                element=driver.findElement(By.xpath(locator1));
+                String locator1 = "//div[text()='" + value + "']//preceding::input[1]";
+                element = driver.findElement(By.xpath(locator1));
                 element.click();
-                element=driver.findElement(By.xpath("//button[text()=' Delete Selected ']"));
+                element = driver.findElement(By.xpath("//button[text()=' Delete Selected ']"));
                 element.click();
             }
         }
@@ -241,11 +364,10 @@ WebDriver driver;
     }
     public void verifyListData(String locator,String input){
         List<String> DataList =getListData(locator);
-        for (int i=0;i< DataList.size();i++){
-            String value=DataList.get(i);
-            if(value.equalsIgnoreCase(input)){
+        for (String value : DataList) {
+            if (value.equalsIgnoreCase(input)) {
                 System.out.println("Data already exit in list");
-               Assert.assertEquals(value,input);
+                Assert.assertEquals(value, input);
             }
         }
 
@@ -257,32 +379,32 @@ WebDriver driver;
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        if(locatorType.equals("xpath"))
-        {
-            element=driver.findElement(By.xpath(locator));
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            js.executeScript("arguments[0].click();", element);
-        }else if(locatorType.equals("id"))
-        {
-            element=driver.findElement(By.id(locator)) ;
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            js.executeScript("arguments[0].click();", element);
-        }
-        else if(locatorType.equals("name"))
-        {
-            element=driver.findElement(By.name(locator)) ;
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            js.executeScript("arguments[0].click();", element);
-        }else if(locatorType.equals("className"))
-        {
-            element=driver.findElement(By.className(locator)) ;
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            js.executeScript("arguments[0].click();", element);
-        }else if(locatorType.equals("css"))
-        {
-            element=driver.findElement(By.cssSelector(locator)) ;
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            js.executeScript("arguments[0].click();", element);
+        switch (locatorType) {
+            case "xpath" -> {
+                element = driver.findElement(By.xpath(locator));
+                JavascriptExecutor js = (JavascriptExecutor) driver;
+                js.executeScript("arguments[0].click();", element);
+            }
+            case "id" -> {
+                element = driver.findElement(By.id(locator));
+                JavascriptExecutor js = (JavascriptExecutor) driver;
+                js.executeScript("arguments[0].click();", element);
+            }
+            case "name" -> {
+                element = driver.findElement(By.name(locator));
+                JavascriptExecutor js = (JavascriptExecutor) driver;
+                js.executeScript("arguments[0].click();", element);
+            }
+            case "className" -> {
+                element = driver.findElement(By.className(locator));
+                JavascriptExecutor js = (JavascriptExecutor) driver;
+                js.executeScript("arguments[0].click();", element);
+            }
+            case "css" -> {
+                element = driver.findElement(By.cssSelector(locator));
+                JavascriptExecutor js = (JavascriptExecutor) driver;
+                js.executeScript("arguments[0].click();", element);
+            }
         }
 
 
@@ -293,20 +415,11 @@ WebDriver driver;
        Returns: null
      */
     public void captureScreenshot(String screenshotName) {
-//        driver=initializeDriver();
         String UserDir = System.getProperty("user.dir");
         String PathSep = System.getProperty("file.separator");
         String filePath = UserDir + PathSep + "src" + PathSep + "test" + PathSep + "java" + PathSep + "org" + PathSep + "com" + PathSep + "keyworddrivenframework" + PathSep + "screenshot"+PathSep;
 
-        System.out.println(driver);
         try {
-// To create reference of TakesScreenshot
-//            TakesScreenshot screenshot = (TakesScreenshot) driver;
-// Call method to capture screenshot
-//            File src = screenshot.getScreenshotAs(OutputType.FILE);
-// Copy files to specific location
-// result.getName() will return name of test case so that screenshot name will be same as test case name
-            System.out.println(driver);
             File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
             FileUtils.copyFile(scrFile, new File(filePath + screenshotName + ".png"));
             System.out.println("Successfully captured a screenshot");
@@ -325,6 +438,9 @@ WebDriver driver;
     }
     public void configLog(){
         PropertyConfigurator.configure("src/main/resources/log4j.properties");
+    }
+    public void refreshBrowser(){
+        driver.navigate().refresh();
     }
 }
 

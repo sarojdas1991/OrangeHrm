@@ -20,7 +20,7 @@ public class GenerateSheet {
     Workbook book;
     Sheet sheet;
     public  void getSheetName(String sheetName) {
-        String filePath = UserDir + PathSep + "src" + PathSep + "test" + PathSep + "java" + PathSep + "org" + PathSep + "com" + PathSep + "keyworddrivenframework"+ PathSep+"testdata" + PathSep + "InputKeywords.xlsx";
+        String filePath = UserDir + PathSep + "src" + PathSep + "test" + PathSep + "java" + PathSep + "org" + PathSep + "com" + PathSep + "keyworddrivenframework"+ PathSep+"testdata" + PathSep + "InputKeywords2.xlsx";
 
         try {
             File file=new File(filePath);
@@ -35,9 +35,9 @@ public class GenerateSheet {
         }
         sheet=book.getSheet(sheetName);
         for(int i=0;i<sheet.getLastRowNum();i++){
-            String cellValue=sheet.getRow(i+1).getCell(2).getStringCellValue();
+            String cellValue=sheet.getRow(i+1).getCell(1).getStringCellValue();
             if(cellValue.equalsIgnoreCase("Y")){
-                String cellData=sheet.getRow(i+1).getCell(1).getStringCellValue();
+                String cellData=sheet.getRow(i+1).getCell(i).getStringCellValue();
                 System.out.println("Scenario Name "+cellData);
                 engine=new KeywordEngine();
                 engine.startExecution(cellData);
